@@ -2,9 +2,12 @@
 
 namespace App\Filament\Resources\Mejas\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Support\RawJs;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TextInput\Mask;
 
 class MejaForm
 {
@@ -13,22 +16,40 @@ class MejaForm
         return $schema
             ->components([
                 TextInput::make('nama')
-                    ->required(),
-                TextInput::make('tipe')
-                    ->required(),
-                TextInput::make('harga_per_jam')
+                ->label('Nama Meja')
+                ->required(),
+
+                Select::make('tipe')
+                    ->label('Tipe Meja')
+                    ->options([
+                        'Regular' => 'Regular',
+                        'VIP' => 'VIP',
+                    ])
                     ->required()
-                    ->numeric(),
-                TextInput::make('status')
-                    ->required(),
+                    ->native(false), // biar dropdown-nya bagus
+
+                TextInput::make('harga_per_jam')
+                    ->label('Harga per Jam')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(',')
+                    ->prefix("Rp"),
+
+                Select::make('status')
+                    ->label('Status Meja')
+                    ->options([
+                        'Tersedia' => 'Tersedia',
+                        'Booking' => 'Sedang Dibooking',
+                        'Pemeliharaan' => 'Pemeliharaan',
+                    ])
+                    ->required()
+                    ->native(false),
+
                 Toggle::make('active')
+                    ->label('Aktif')
                     ->required(),
-                TextInput::make('created_by')
-                    ->numeric(),
-                TextInput::make('updated_by')
-                    ->numeric(),
-                TextInput::make('deleted_by')
-                    ->numeric(),
             ]);
     }
 }
