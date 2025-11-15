@@ -23,7 +23,6 @@ return new class extends Migration
             $table->time('jam_selesai');
             $table->integer('durasi_booking');
             $table->double('total_harga');
-            $table->string('status', 128);
             $this->base($table);
         });
     }

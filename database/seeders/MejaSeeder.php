@@ -22,6 +22,7 @@ class MejaSeeder extends Seeder
                 'tipe' => 'Regular',
                 'harga_per_jam' => 70000,
                 'status' => 'Tersedia',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -34,6 +35,7 @@ class MejaSeeder extends Seeder
                 'tipe' => 'VIP',
                 'harga_per_jam' => 95000,
                 'status' => 'Tersedia',
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
