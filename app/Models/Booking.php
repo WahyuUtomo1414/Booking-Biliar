@@ -13,4 +13,9 @@ class Booking extends Model
     use HasFactory, Notifiable, AuditedBySoftDelete, SoftDeletes;
     protected $table = 'booking';
     protected $guarded = ['id'];
+
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'booking_id');
+    }
 }
