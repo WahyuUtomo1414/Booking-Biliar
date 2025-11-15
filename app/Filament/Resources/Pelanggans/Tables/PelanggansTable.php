@@ -21,21 +21,26 @@ class PelanggansTable
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('nomor_wa')
-                    ->searchable(),
+                    ->label('WhatsApp')
+                    ->searchable()
+                    ->url(fn ($record) => 'https://wa.me/' . $record->nomor_wa)
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-phone')
+                    ->iconPosition('before')
+                    ->badge()
+                    ->color('success'),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
                 IconColumn::make('active')
                     ->boolean(),
-                TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('deleted_by')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('createdBy.name')
+                    ->label('Created By'),
+                TextColumn::make('updatedBy.name')
+                    ->label("Updated by"),
+                TextColumn::make('deletedBy.name')
+                    ->label("Deleted by")
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
