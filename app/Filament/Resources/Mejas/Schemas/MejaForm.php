@@ -41,7 +41,6 @@ class MejaForm
                     ->label('Status Meja')
                     ->options([
                         'Tersedia' => 'Tersedia',
-                        'Booking' => 'Sedang Dibooking',
                         'Pemeliharaan' => 'Pemeliharaan',
                     ])
                     ->required()
