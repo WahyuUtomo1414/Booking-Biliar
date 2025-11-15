@@ -65,17 +65,6 @@ class BookingForm
                         ->numeric()
                         ->required(),
 
-                    Select::make('status')
-                        ->label('Status Booking')
-                        ->options([
-                            'pending' => 'Pending',
-                            'active'  => 'Active',
-                            'finished' => 'Finished',
-                            'cancelled' => 'Cancelled',
-                        ])
-                        ->required()
-                        ->native(false),
-
                 ])->columns(2)->columnSpanFull(),
 
             Section::make('Pembayaran')
