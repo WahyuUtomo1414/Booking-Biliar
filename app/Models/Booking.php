@@ -14,6 +14,16 @@ class Booking extends Model
     protected $table = 'booking';
     protected $guarded = ['id'];
 
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id');
+    }
+
+    public function meja()
+    {
+        return $this->belongsTo(Meja::class, 'meja_id');
+    }
+
     public function pembayaran()
     {
         return $this->hasOne(Pembayaran::class, 'booking_id');
