@@ -18,7 +18,7 @@ return new class extends Migration
             $table->double('jumlah_bayar');
             $table->string('jenis_pembayaran', 128);
             $table->string('bukti_pembayaran', 128)->nullable();
-            $table->string('status', 128)->default('pending');
+            $table->string('status', 128);
             $table->timestamps();
         });
     }

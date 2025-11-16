@@ -153,9 +153,10 @@ class BookingForm
 
             Section::make('Pembayaran')
                 ->description('Isi pembayaran jika pelanggan sudah bayar.')
+                ->relationship('pembayaran')
                 ->schema([
 
-                    Select::make('pembayaran.jenis_pembayaran')
+                    Select::make('jenis_pembayaran')
                         ->label('Jenis Pembayaran')
                         ->options([
                             'Cash' => 'Cash',
@@ -165,20 +166,20 @@ class BookingForm
                         ->native(false)
                         ->required(),
 
-                    TextInput::make('pembayaran.jumlah_bayar')
+                    TextInput::make('jumlah_bayar')
                         ->label('Jumlah Bayar')
                         ->prefix('Rp')
                         ->numeric()
                         ->required(),
 
-                    FileUpload::make('pembayaran.bukti_pembayaran')
+                    FileUpload::make('bukti_pembayaran')
                         ->label('Bukti Pembayaran')
                         ->directory('bukti_pembayaran')
                         ->image()
                         ->nullable()
                         ->columnSpanFull(),
 
-                    Select::make('pembayaran.status')
+                    Select::make('status')
                         ->label('Status Pembayaran')
                         ->options([
                             'pending' => 'Pending',
