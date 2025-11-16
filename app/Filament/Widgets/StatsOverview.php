@@ -10,18 +10,29 @@ class StatsOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Unique views', '192.1k')
-                ->description('32k increase')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success'),
-            Stat::make('Bounce rate', '21%')
-                ->description('7% increase')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->color('danger'),
-            Stat::make('Average time on page', '3:12')
-                ->description('3% increase')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success'),
+            Stat::make('Total Pelanggan', \App\Models\Pelanggan::count())
+                ->description('pelanggan')
+                ->descriptionIcon('heroicon-m-user-group')
+                ->color('info')
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
+
+            Stat::make('Total Booking', \App\Models\Booking::count())
+                ->description('booking')
+                ->descriptionIcon('heroicon-m-book-open')
+                ->color('warning')
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
+
+            Stat::make(
+                'Total Pendapatan',
+                'Rp ' . number_format(
+                    \App\Models\Booking::sum('total_harga'),
+                    0, ',', '.'
+                )
+            )
+                ->description('Total Transaksi Booking')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('success')
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
         ];
     }
 }
