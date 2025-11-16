@@ -18,12 +18,22 @@ class BookingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('pelanggan_id')
-                    ->numeric()
+                TextColumn::make('pelanggan.nama')
                     ->sortable(),
-                TextColumn::make('meja_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('pelanggan.nomor_wa')
+                    ->label('WhatsApp')
+                    ->searchable()
+                    ->url(fn ($record) => 'https://wa.me/' . $record->nomor_wa)
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-phone')
+                    ->iconPosition('before')
+                    ->badge()
+                    ->color('success'),
+                TextColumn::make('meja.nama')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) =>
+                        $record->meja ? $record->meja->nama . ' - ' . $record->meja->tipe : '-'
+                    ),
                 TextColumn::make('kode_booking')
                     ->searchable(),
                 TextColumn::make('tanggal')
@@ -37,21 +47,19 @@ class BookingsTable
                     ->sortable(),
                 TextColumn::make('durasi_booking')
                     ->numeric()
+                    ->suffix(' Menit')
                     ->sortable(),
                 TextColumn::make('total_harga')
                     ->numeric()
+                    ->prefix('Rp. ')
                     ->sortable(),
-                TextColumn::make('status')
-                    ->searchable(),
-                TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('deleted_by')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('createdBy.name')
+                    ->label('Created By'),
+                TextColumn::make('updatedBy.name')
+                    ->label("Updated by"),
+                TextColumn::make('deletedBy.name')
+                    ->label("Deleted by")
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
