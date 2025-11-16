@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Bookings\Schemas;
 
+use App\Models\Meja;
 use Filament\Support\RawJs;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -15,6 +16,26 @@ class BookingForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $updateTotalHarga = function (callable $set, callable $get) {
+            $durasi = $get('durasi_booking');
+            $mejaId = $get('meja_id');
+
+            if (!$durasi || !$mejaId) {
+                return;
+            }
+
+            $meja = Meja::find($mejaId);
+            if (!$meja) return;
+
+            $total = ($durasi / 60) * $meja->harga_per_jam;
+
+            // Update total harga
+            $set('total_harga', $total);
+
+            // Update pembayaran otomatis
+            $set('pembayaran.jumlah_bayar', $total);
+        };
+
         return $schema
             ->components([
                 Section::make('Data Booking')
@@ -40,18 +61,9 @@ class BookingForm
                         ->searchable()
                         ->required()
                         ->reactive()
-                        ->native(false)
-                        ->afterStateUpdated(function ($state, callable $set, $get) {
-
-                            $durasi = $get('durasi_booking');
-                            if (!$durasi) return;
-
-                            $meja = \App\Models\Meja::find($state);
-                            if (!$meja) return;
-
-                            $total = ($durasi / 60) * $meja->harga_per_jam;
-                            $set('total_harga', $total);
-                        }),
+                        ->afterStateUpdated(fn ($state, $set, $get) =>
+                            $updateTotalHarga($set, $get)
+                        ),
 
                     TextInput::make('kode_booking')
                         ->label('Kode Booking')
@@ -60,6 +72,7 @@ class BookingForm
 
                     DatePicker::make('tanggal')
                         ->label('Tanggal Booking')
+                        ->native(false)
                         ->required(),
 
                     Select::make('jam_mulai')
@@ -79,27 +92,17 @@ class BookingForm
                         ])
                         ->required()
                         ->reactive()
-                        ->native(false)
-                        ->afterStateUpdated(function ($state, callable $set, $get) {
-
+                        ->afterStateUpdated(function ($state, $set, $get) use ($updateTotalHarga) {
                             $mulai = $state;
                             $selesai = $get('jam_selesai');
 
-                            if (!$mulai || !$selesai) return;
-
-                            $hMulai = intval(explode(':', $mulai)[0]);
-                            $hSelesai = intval(explode(':', $selesai)[0]);
-
-                            $durasi = ($hSelesai - $hMulai) * 60;
-                            $set('durasi_booking', $durasi);
-
-                            $mejaId = $get('meja_id');
-                            if ($mejaId) {
-                                $meja = \App\Models\Meja::find($mejaId);
-                                if ($meja) {
-                                    $set('total_harga', ($durasi / 60) * $meja->harga_per_jam);
-                                }
+                            if ($mulai && $selesai) {
+                                $hMulai = intval(explode(':', $mulai)[0]);
+                                $hSelesai = intval(explode(':', $selesai)[0]);
+                                $set('durasi_booking', ($hSelesai - $hMulai) * 60);
                             }
+
+                            $updateTotalHarga($set, $get);
                         }),
 
                     Select::make('jam_selesai')
@@ -119,27 +122,16 @@ class BookingForm
                         ])
                         ->required()
                         ->reactive()
-                        ->native(false)
-                        ->afterStateUpdated(function ($state, callable $set, $get) {
-
+                        ->afterStateUpdated(function ($state, $set, $get) use ($updateTotalHarga) {
                             $mulai = $get('jam_mulai');
-                            $selesai = $state;
 
-                            if (!$mulai || !$selesai) return;
-
-                            $hMulai = intval(explode(':', $mulai)[0]);
-                            $hSelesai = intval(explode(':', $selesai)[0]);
-
-                            $durasi = ($hSelesai - $hMulai) * 60;
-                            $set('durasi_booking', $durasi);
-
-                            $mejaId = $get('meja_id');
-                            if ($mejaId) {
-                                $meja = \App\Models\Meja::find($mejaId);
-                                if ($meja) {
-                                    $set('total_harga', ($durasi / 60) * $meja->harga_per_jam);
-                                }
+                            if ($mulai && $state) {
+                                $hMulai = intval(explode(':', $mulai)[0]);
+                                $hSelesai = intval(explode(':', $state)[0]);
+                                $set('durasi_booking', ($hSelesai - $hMulai) * 60);
                             }
+
+                            $updateTotalHarga($set, $get);
                         }),
 
                     TextInput::make('durasi_booking')
@@ -151,9 +143,9 @@ class BookingForm
                         ->label('Total Harga')
                         ->prefix('Rp')
                         ->default(0)
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            $set('pembayaran.jumlah_bayar', $state);
-                        })
+                        ->afterStateUpdated(fn ($state, $set) =>
+                            $set('pembayaran.jumlah_bayar', $state)
+                        )
                         ->mask(RawJs::make('$money($input)'))
                         ->stripCharacters(['.', ',']),
 
