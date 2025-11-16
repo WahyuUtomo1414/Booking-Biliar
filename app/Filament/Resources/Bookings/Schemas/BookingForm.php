@@ -182,8 +182,8 @@ class BookingForm
                     Select::make('status')
                         ->label('Status Pembayaran')
                         ->options([
-                            'pending' => 'Pending',
-                            'paid' => 'Paid',
+                            'belum lunas' => 'Belum Lunas',
+                            'lunas' => 'Lunas',
                         ])
                         ->native(false)
                         ->required(),
